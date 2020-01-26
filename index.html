@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Information Visualization - Project 1</title>
+        <link rel="stylesheet" type="text/css" href="css/d3.parcoords.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <script src="lib/d3.min.js"></script>
+        <script src="lib/d3.parcoords.js"></script>
+        <script src="lib/divgrid.js"></script>
+        <script src="lib/underscore.js"></script>
+        <script src="lib/underscore.math.js"></script>
+    </head>
+    <body>
+        <div id="controls" class="dropdown" style="width:100%;">
+            <button class="dropbtn">Controls</button>
+            <div class="dropdown-content">
+                <a><b>Brush:</b> Drag vertically along an axis.</a>
+                <a><b>Remove Brush:</b> Tap the axis background.</a>
+                <a><b>Reorder Axes:</b> Drag a label horizontally.</a>
+                <a><b>Invert Axis:</b> Tap an axis label.</a>
+                <a><span style="background-color: #333; color: white">AVG</span><b>:</b> Select rows to get the averages.</a>
+                <a><span style="background-color: #333; color: white">MAX</span><b>:</b> Select rows to get the maximum.</a>
+            </div>
+        </div>
+
+        <div id="example" class="parcoords" style="width:100%; height:300px;"></div>
+
+        <div id="groups" class="row">
+            <div class="cell">
+                <input type="button" onclick="total_avg()" class="button" value="AVG">
+                <input type="button" onclick="total_max()" class="button" value="MAX">
+            </div>
+            <div class="cell" id="av"> AVG: </div>
+            <div class="cell" id="iv"> InfoVis: </div>
+            <div class="cell" id="st"> Stats: </div>
+            <div class="cell" id="ma"> Math: </div>
+            <div class="cell" id="ar"> Art: </div>
+            <div class="cell" id="us"> User: </div>
+            <div class="cell" id="pr"> Prog: </div>
+            <div class="cell" id="gr"> Graph: </div>
+            <div class="cell" id="ui"> UI: </div>
+            <div class="cell" id="ux"> UX: </div>
+            <div class="cell" id="cm"> Comm: </div>
+            <div class="cell" id="cl"> Collab: </div>
+            <div class="cell" id="re"> Repo: </div>
+           
+        </div>
+
+        <div id="grid"></div>
+
+
+        
+<script id="brushing">
+    var pc;
+    var dimentions = {  //it doesn't work yet
+        "InfoVis": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Stats": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Math": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Art": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "User": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Prog": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Graph": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "UI": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "UX": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Comm": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Collab": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        },
+        "Repo": {
+            ticks: 10,
+            tickValues: [1,2,3,4,5,6,7,8,9,10]
+        }
+        
+    };
+    var colors = ["#e67c73", "#ec9270", "#f2a96d", "#f8bf6a", "#ffd666", "#ded16d", "#bccc74", "#9bc67b", "#79c182", "#57bb8a"];
+    
+
+    // color scale for zscores
+    var zcolorscale = d3.scale.linear()
+        .domain([-2,-0.5,0.5,2])
+        .range(["#e67c73", "#ffd666", "#ffd666", "#57bb8a"])
+        .interpolate(d3.interpolateLab);
+    
+    var parcoords = d3.parcoords()("#example")
+      .alpha(0.4);
+    
+    // load csv file and create the chart
+    d3.csv('data/skills.csv', function(data) {
+        pc = parcoords
+            .data(data)
+            .dimensions(dimentions)
+            .hideAxis(["Alias", "AVG", "Interests", "NaN"])
+            .render()
+            .brushMode("1D-axes")
+            .reorderable();  // enable brushing
+    
+        change_color("InfoVis");
+    
+        // click label to activate coloring
+        pc.svg.selectAll(".dimension")
+            .on("click", change_color)
+            .selectAll(".label")
+            .style("font-size", "14px");
+        
+        // create data table, row hover highlighting
+        var grid = d3.divgrid();
+        d3.select("#grid")
+            .datum(data.slice(0,64))
+            .call(grid)
+            .selectAll(".row")
+            .on({
+                "mouseover": function(d) { 
+                    parcoords.highlight([d]);
+                },
+                "mouseout": parcoords.unhighlight
+            });
+    
+        // update data table on brush event
+        parcoords.on("brush", function(d) {
+            d3.select("#grid")
+                .datum(d.slice(0,64))
+                .call(grid)
+                .selectAll(".row")
+                .on({
+                    "mouseover": function(d) { parcoords.highlight([d]) },
+                    "mouseout": parcoords.unhighlight
+                });
+        });
+    });
+    
+    
+    // update color
+    function change_color(dimension) {
+        pc.svg.selectAll(".dimension")
+            .style("font-weight", "normal")
+            .filter(function(d) { return d == dimension; })
+            .style("font-weight", "bold");
+    
+        pc.color(zcolor(pc.data(),dimension)).render();
+    }
+    
+    // return color function based on plot and dimension
+    function zcolor(col, dimension) {
+        var z = zscore(_(col).pluck(dimension).map(parseFloat).filter(function(value) { return !Number.isNaN(value) }))
+        return function(d) { return zcolorscale(z(d[dimension])) }
+    };
+    
+    // color by zscore
+    function zscore(col) {
+        var n = col.length,
+            mean = _(col).mean(),
+            sigma = _(col).stdDeviation();
+        return function(d) {
+        return (d-mean)/sigma;
+        };
+    };
+
+    var group_ids = ["av", "iv", "st", "ma", "ar", "us", "pr", "gr", "ui", "ux", "cm", "cl", "re"];
+
+    function total_avg(){
+        var inputElements = document.getElementsByClassName('cb');
+        var checkedElementsNumber = 0;  //count number of checked numbers
+        var avgValues = [0,0,0,0,0,0,0,0,0,0,0,0,0]; //13 values to show
+        var rowValues = [0,0,0,0,0,0,0,0,0,0,0,0,0]; //actual row to manage
+
+        for(var i=0; i<inputElements.length; ++i){
+            if(inputElements[i].checked){
+                checkedElementsNumber++; 
+                //inputElements[i].checked = false;   //remove check
+                rowValues = JSON.parse("[" + inputElements[i].value + "]"); //parse value to array
+                for(j=0; j<14; j++){
+                    avgValues[j] += rowValues[j];
+                }
+            }
+        }
+        //calculate AGV per each skill
+        for(k=0; k<13; k++){
+            avgValues[k] = avgValues[k]/checkedElementsNumber;
+        }
+        //show results
+        if(!isNaN(avgValues[0])){
+            document.getElementById("av").innerHTML = "AVG: " + avgValues[0].toFixed(2);
+            document.getElementById("iv").innerHTML = "Info Vis: " + avgValues[1].toFixed(2);
+            document.getElementById("st").innerHTML = "Stat: " + avgValues[2].toFixed(2);
+            document.getElementById("ma").innerHTML = "Math: " + avgValues[3].toFixed(2);
+            document.getElementById("ar").innerHTML = "Art: " + avgValues[4].toFixed(2);
+            document.getElementById("us").innerHTML = "User: " + avgValues[5].toFixed(2);
+            document.getElementById("pr").innerHTML = "Prog: " + avgValues[6].toFixed(2);
+            document.getElementById("gr").innerHTML = "Graph: " + avgValues[7].toFixed(2);
+            document.getElementById("ui").innerHTML = "UI: " + avgValues[8].toFixed(2);
+            document.getElementById("ux").innerHTML = "UX: " + avgValues[9].toFixed(2);
+            document.getElementById("cm").innerHTML = "Comm: " + avgValues[10].toFixed(2);
+            document.getElementById("cl").innerHTML = "Collab: " + avgValues[11].toFixed(2);
+            document.getElementById("re").innerHTML = "Repo: " + avgValues[12].toFixed(2);
+
+            for(l=0; l<13; l++){
+                var el = document.getElementById(group_ids[l]);
+                el.style.backgroundColor = colors[avgValues[l].toFixed(0)-1];
+            }
+        }
+    }
+
+    function total_max(){
+        var inputElements = document.getElementsByClassName('cb');
+        var maxValues = [0,0,0,0,0,0,0,0,0,0,0,0,0]; //13 values to show
+        var rowValues = [0,0,0,0,0,0,0,0,0,0,0,0,0]; //actual row to manage
+
+        for(var i=0; i<inputElements.length; ++i){
+            if(inputElements[i].checked){
+                //inputElements[i].checked = false;   //remove check
+                rowValues = JSON.parse("[" + inputElements[i].value + "]"); //parse value to array
+                for(j=0; j<14; j++){
+                    if(rowValues[j]>maxValues[j])
+                    maxValues[j] = rowValues[j];
+                }
+            }
+        }
+        //show results
+        if(!isNaN(maxValues[0])){
+            document.getElementById("av").innerHTML = "AVG: " + maxValues[0].toFixed(2);
+            document.getElementById("iv").innerHTML = "Info Vis: " + maxValues[1].toFixed(2);
+            document.getElementById("st").innerHTML = "Stat: " + maxValues[2].toFixed(2);
+            document.getElementById("ma").innerHTML = "Math: " + maxValues[3].toFixed(2);
+            document.getElementById("ar").innerHTML = "Art: " + maxValues[4].toFixed(2);
+            document.getElementById("us").innerHTML = "User: " + maxValues[5].toFixed(2);
+            document.getElementById("pr").innerHTML = "Prog: " + maxValues[6].toFixed(2);
+            document.getElementById("gr").innerHTML = "Graph: " + maxValues[7].toFixed(2);
+            document.getElementById("ui").innerHTML = "UI: " + maxValues[8].toFixed(2);
+            document.getElementById("ux").innerHTML = "UX: " + maxValues[9].toFixed(2);
+            document.getElementById("cm").innerHTML = "Comm: " + maxValues[10].toFixed(2);
+            document.getElementById("cl").innerHTML = "Collab: " + maxValues[11].toFixed(2);
+            document.getElementById("re").innerHTML = "Repo: " + maxValues[12].toFixed(2);
+
+            for(l=0; l<13; l++){
+                var el = document.getElementById(group_ids[l]);
+                el.style.backgroundColor = colors[maxValues[l].toFixed(0)-1];
+            }
+        }
+    }
+
+    </script>
+    
+
+    </body>
+</html>

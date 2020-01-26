@@ -1,0 +1,125 @@
+body {
+  font-size: 14px;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  /*margin-top: 24px;*/
+  background: #fff;
+  line-height: 1.45em;
+}
+a {
+  color: #555;
+}
+a:hover {
+  color: #000;
+}
+ul {
+  margin: 0 20px;
+  padding: 0;
+}
+.dark {
+  background: #222;
+}
+p {
+  width: 560px;
+}
+pre {
+  color: #444;
+  font-family: Ubuntu Mono, Monaco, monospace;
+  padding: 4px 8px;
+  background: #f2f2f2;
+  border: 1px solid #ccc;
+}
+h1 small {
+  font-weight: normal;
+  font-size: 0.5em;
+}
+h3 {
+  margin-top: 40px;
+}
+.float {
+  float: left;
+}
+.centered {
+  text-align: center;
+}
+.hide {
+  display: none;
+}
+input {
+  font-size: 16px;
+}
+
+/* group row styles */
+#groups {background-color: #333; height: 24px; }
+#groups .cell { float: left; width: 7.1%; height: 24px; text-align: center;}
+
+/* data table styles */
+#grid { height: 198px; }
+#grid .row, #grid .header { clear: left; font-size: 12px; line-height: 18px; height: 18px; }
+#grid .row:hover { font-weight: bold;}
+#grid .row:nth-child(odd) { background: rgba(0,0,0,0.05); }
+#grid .header { font-weight: bold; }
+#grid .cell { float: left; overflow: hidden; white-space: nowrap; width: 5%; height: 18px; }
+#grid .col-0 { width: 2%; }
+#grid .col-1 { width: 12%; }
+#grid .col-2 { width: 3%; }
+#grid .col-15 { width: 18%; }
+
+.button {
+  background-color: #333; /* Green */
+  border: none;
+  color: white;
+  padding: 5px 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+
+.button:hover {
+  background-color: white; /* Green */
+  color: #333;
+}
+
+/* Dropdown Button */
+.dropbtn {
+  background-color: #333;
+  color: white;
+  padding: 5px;
+  font-size: 12px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #222;}
